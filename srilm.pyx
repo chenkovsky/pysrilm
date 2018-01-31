@@ -11,6 +11,8 @@
 # C++ since. But this is old code...
 
 # compile me with cython --cplus, or Extension(..., language="c++", ...)
+cdef extern from "srilm-macos.hh":
+    pass
 
 cdef extern from "unistd.h":
     void * malloc(int)
