@@ -72,6 +72,8 @@ cdef class _Vocab:
         del_Vocab(self._vocab)
 
     def intern(self, word):
+        if isinstance(word, str):
+            word = word.encode("utf8")
         return self._vocab.getIndex(word,
                                     self._vocab.unkIndex())
 
@@ -109,7 +111,10 @@ cdef class LM:
         if debug:
             self._ngram.debugme(10)
         cdef c_File * fp
-        fp = new_File(path, "r")
+        bpath = path
+        if isinstance(bpath, str):
+            bpath = bpath.encode("utf8")
+        fp = new_File(bpath, "r")
         self._ngram.read(fp[0])
         del_File(fp)
         self.path = path
@@ -121,7 +126,7 @@ cdef class LM:
     #     -> logprob_strings("brown", ["quick", "the"])
     def logprob_strings(self, word, context):
         word_i = self.vocab.intern(word)
-        context_i = map(self.vocab.intern, context)
+        context_i = list(map(self.vocab.intern, context))
         return self.logprob(word_i, context_i)
         
     # Like above, but takes interned words.
